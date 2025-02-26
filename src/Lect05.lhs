@@ -235,12 +235,15 @@ E.g., write a property to test that `c2f` and `f2c` are inverses:
 \begin{code}
 prop_c2f2c :: Double -> Bool
 prop_c2f2c c = f2c (c2f c) =~= c 
+<<<<<<< Updated upstream
 
 cTemp :: Gen Double
 cTemp = choose (-273.15, 1000)
 
 prop_c2f2c' :: Property 
 prop_c2f2c' = forAll cTemp prop_c2f2c
+=======
+>>>>>>> Stashed changes
 \end{code}
 
 

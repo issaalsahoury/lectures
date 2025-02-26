@@ -28,8 +28,11 @@ Haskell's built-in list type might be defined something like this:
     [a] = [] | a : [a]
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 - How should we interpret this?
 =======
+=======
+>>>>>>> Stashed changes
     'a' here stands for a type variable
 
 Read as: a list of type 'a' ([a]) is either an empty list ([]) or 
@@ -39,6 +42,19 @@ Read as: a list of type 'a' ([a]) is either an empty list ([]) or
 - What are some ramifications of this definition?
 
 - Try using `[]` and `:` to build some lists.
+
+    [Int] = [] | Int : [Int]
+
+    [3] = 3:[]
+    [4,3] = 4:(3:[])
+    [10, 8, 6, 4, 3] = 10(8: (6:( 4: (3:[]))))
+
+    
+    [[Int]] = [] | [Int] : [[Int]]
+
+    (4:(3:[])) : ((3:[]:[]))
+
+
 
     [Int] = [] | Int : [Int]
 
@@ -103,7 +119,12 @@ E.g., implement the following list construction functions:
 >
 > enumFrom' :: Enum a => a -> [a]
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 > enumFrom' = undefined
+=======
+> enumFrom' x = x : enumFrom' (succ x)
+> -- head gives us the first value of a list so head [1,2,3] is 1, etc. 
+>>>>>>> Stashed changes
 =======
 > enumFrom' x = x : enumFrom' (succ x)
 > -- head gives us the first value of a list so head [1,2,3] is 1, etc. 
