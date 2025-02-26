@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-overlapping-patterns #-}
 % CS 340: Programming Paradigms and Patterns
 % Lect 06 - Recursion
 % Michael Lee
@@ -27,11 +28,14 @@ A. Iteration & Reduction (Processing elements one by one)
 \begin{code}
 -- sum up the elements of a list
 sum' :: Num a => [a] -> a
-sum' = undefined
+sum' [] = 0 
+sum' (x:xs) = x + sum' xs 
 
 -- a classic!
 factorial :: Integer -> Integer
-factorial = undefined
+factorial 0 = 1 
+factorial 1 = 1 
+factorial n = n * factorial (n-1)
 \end{code}
 
 
@@ -40,11 +44,19 @@ B. Filtering (Selective iteration/reduction)
 \begin{code}
 -- sum only the positive numbers in a list
 sumPositives :: Integral a => [a] -> a
-sumPositives = undefined
+sumPositives [] = 0
+sumPositives (x:xs) | x > 0     = x + sumPositives xs 
+                    | otherwise = sumPositives xs 
+-- sumPositives (x:xs) = (if x > 0 then x else 0) + sumPositives xs
+-- line 49 same as lines 47/48 but with if else statement
 
 -- palindroms are strings that read the same forwards as backwards
 palindromes :: [String] -> [String]
-palindromes = undefined
+palindromes [] = [] 
+palindromes (s:ss) | s == reverse s = s : palindromes ss
+                   | otherwise      = palindromes ss
+--palindromes (s:ss) = (if s == reverse s then (s:) else id) (palindromes ss)
+-- line 57 is the same as lines 55/56 but with if else and id function
 \end{code}
 
 
@@ -53,13 +65,29 @@ C. Accumulation (Computing/Passing information "down" while recursing)
 \begin{code}
 -- count even numbers
 countEvens :: Integral a => [a] -> Int
-countEvens = undefined
+countEvens [] = 0 
+countEvens (n:ns) | n `mod` 2 == 0 = 1 + countEvens ns 
+                  | otherwise      = countEvens ns 
+--countEvens ns = helper ns 0
+--  where helper [] acc = acc
+--        helper (m:ms) acc = helper ms (if m `mod` 2 == 0 then acc + 1 else acc)
+-- Lines 71/72/73 same as 68/69/70 written diff
 
 -- reverse a list
 reverse' :: [a] -> [a]
-reverse' = undefined
+--reverse' [] = [] 
+--reverse' (x:xs) = reverse' xs ++ [x]
+-- Lets write reverse instead using accumulation pattern
+reverse' xs = helper xs []
+  where helper [] acc     = acc 
+        helper (y:ys) acc = helper ys (y:acc)
 \end{code}
 
+helper (1:2:3:[]) []
+= helper (2:3:[]) (1:[]) 
+= helper (3:[]) (2:1:[])
+= helper ([]) (3:2:1:[])
+= (3:2:1:[]) 
 
 D. Combinations & Permutations (Essential combinatorics)
 

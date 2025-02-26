@@ -235,6 +235,12 @@ E.g., write a property to test that `c2f` and `f2c` are inverses:
 \begin{code}
 prop_c2f2c :: Double -> Bool
 prop_c2f2c c = f2c (c2f c) =~= c 
+
+cTemp :: Gen Double
+cTemp = choose (-273.15, 1000)
+
+prop_c2f2c' :: Property 
+prop_c2f2c' = forAll cTemp prop_c2f2c
 \end{code}
 
 
@@ -243,11 +249,12 @@ E.g., write a property to test `mySum` using `sum` as a reference implementation
 \begin{code}
 mySum :: (Eq a, Num a) => [a] -> a
 mySum [] = 0
-mySum (x:xs) = x + mySum xs
-
+--mySum (x:xs) = x + mySum xs
+mySum (7:8:xs) = 7 + 9 + mySum xs
+mySum (x:xs) = x + mySum xs 
 
 prop_sum :: [Integer] -> Bool
-prop_sum = undefined
+prop_sum xs = mySum xs == sum xs 
 \end{code}
 
 
@@ -256,11 +263,11 @@ addition and commutativity of addition:
 
 \begin{code}
 prop_distMultOverAdd :: Integer -> [Integer] -> Bool
-prop_distMultOverAdd = undefined
+prop_distMultOverAdd n xs = mySum[n*x | x <- xs] == n * mySum xs
 
 
 prop_commAdd :: [Integer] -> Property
-prop_commAdd = undefined
+prop_commAdd xs = forAll (shuffle xs) (\ys -> mySum ys == mySum xs)
 \end{code}
 
 
