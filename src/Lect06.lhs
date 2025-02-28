@@ -21,6 +21,7 @@ Agenda:
      C. Accumulation
      D. Combinations & Permutations
      E. Divide & Conquer
+     F. Generative recursion
 
 
 A. Iteration & Reduction (Processing elements one by one)
@@ -93,30 +94,64 @@ D. Combinations & Permutations (Essential combinatorics)
 
 \begin{code}
 -- generate all combinations of elements in a list (order doesn't matter)
+-- generates the powerset (like discrete math)
 combinations :: [a] -> [[a]]
-combinations = undefined
+combinations [] = [[]]
+combinations [x] = [[x], []]
+combinations [x,y] = [[x,y], [x], [y], []]
+combinations (x:xs) = [x:ys | ys <- combinations xs] ++ combinations xs
 
 -- the knapsack problem: given a list of items (value,weight) and a weight 
 -- capacity, find the maximum value that can be carried
+-- e.g., knapsack 10 [(60,6), (90,8), (50,2), (40,2)] = 150
 knapsack :: (Ord a, Num a) => a -> [(a,a)] -> a
-knapsack = undefined
+knapsack 0 _  = 0
+knapsack _ [] = 0
+knapsack w ((vi,wi):is)
+  | wi <= w   = max (vi + knapsack (w-wi) is) (knapsack w is)
+  | otherwise = knapsack w is
 
 -- generate all permutations of elements in a list (order matters)
 permutations :: [a] -> [[a]]
-permutations = undefined
+permutations []  = [[]]
+permutations [x] = [[x]]
+permutations [x,y] = [[x,y], [y,x]]
+permutations [x,y,z] = [[x,y,z], [y,x,z], [y,z,x],
+                        [x,z,y], [z,x,y], [z,y,x]]
+permutations (x:xs) = concat [interleave x p | p <- permutations xs]
+  where interleave x [] = [[x]]
+        interleave x (y:ys) = (x:y:ys) : [y:ys | zs <- interleave x ys]
+
 
 -- generate all palindromes from a given string (use `nub` to remove dups)
 allPalindromes :: String -> [String]
-allPalindromes = undefined
+allPalindromes s = nub [c | c <- permutations s, c == reverse c]
 \end{code}
 
 
 E. Divide & Conquer (Break a problem into smaller ones of the same structure)
 
 \begin{code}
--- a classic!
-fib :: Integral a => a -> a
-fib = undefined
+-- a classic 1 1 2 3 5 8 13 21 34 55 ...
+fib :: Int -> Integer 
+fib 0 = 1
+fib 1 = 1 
+fib n = fib (n-1) + fib (n-2)
+
+fib' :: Int -> Integer 
+fib' n = memo !! n 
+  where
+    memo = [fib i | i <- [0..]]
+    fib 0 = 0 
+    fib 1 = 1 
+    fib n = memo !! (n-1) + memo !! (n-2)
+
+fib'' :: Int -> Integer
+fib'' n = fib 0 1 n 
+  where fib x _ 0 = x 
+        fib x y n = fib y (x+y) (n-1)
+
+
 
 -- sort by splitting the list in half and merging the sorted halves
 mergesort :: Ord a => [a] -> [a]
