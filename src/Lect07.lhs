@@ -106,7 +106,7 @@ flip f y x = f x y
 
 
 on :: (b -> b -> c) -> (a -> b) -> a -> a -> c
-on = undefined
+on f g x y = f (g x) (g y) 
 \end{code}
 
 
@@ -117,7 +117,8 @@ Recursive patterns via HOFs
 
 \begin{code}
 map :: (a -> b) -> [a] -> [b]
-map = undefined
+map f [] = []
+map f (x:xs) = f x : map f xs
 \end{code}
 
 
@@ -147,7 +148,9 @@ E.g.,
 
 \begin{code}
 filter :: (a -> Bool) -> [a] -> [a]
-filter = undefined
+filter p [] = []
+filter p (x:xs) | p x       = x : filter p xs
+                | otherwise = filter p xs
 \end{code}                 
 
 
@@ -174,7 +177,8 @@ E.g.,
 
 \begin{code}
 all :: (a -> Bool) -> [a] -> Bool
-all = undefined
+all p [] = True 
+all p (x:xs) = p x && all p xs
 
 any :: (a -> Bool) -> [a] -> Bool
 any = undefined
