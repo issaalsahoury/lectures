@@ -41,7 +41,7 @@ Basic combinators
 \begin{code}
 ($) :: (a -> b) -> a -> b
 infixr 0 $
-($) = undefined
+f $ x = f x 
 \end{code}
 
 It seems redundant (why?), but is quite useful in practice!
@@ -62,14 +62,16 @@ E.g., how can we rewrite the following expresions?
 \begin{code}
 (.) :: (b -> c) -> (a -> b) -> a -> c
 infixr 9 .
-(.) = undefined
+f . g = \x -> f $ g x 
+--(.) f g x = f $ g x 
 \end{code}    
 
 E.g., re-implement `even'`, `k2h`, and `strip` with composition:
 
 \begin{code}
 even' :: Integral a => a -> Bool
-even' x = 0 == (x `rem` 2)
+-- even' x = 0 == (x `rem` 2)
+even' = (0 ==) . (`rem` 2) -- this style is known as "point-free"
 
 
 k2c :: Num a => a -> a
@@ -85,11 +87,12 @@ f2h f
   | otherwise = "survivable"
 
 k2h :: (Ord a, Fractional a) => a -> String
-k2h  k = f2h $ c2f $ k2c k
+k2h = f2h . c2f . k2c
 
 
 strip :: String -> String
-strip s = reverse $ dropWhile isSpace $ reverse $ dropWhile isSpace s
+strip = clean . clean 
+  where clean = reverse . dropWhile isSpace 
 \end{code}
 
 
@@ -99,7 +102,7 @@ Combinators are especially useful when paired with other HOFs!
 
 \begin{code}
 flip :: (a -> b -> c) -> b -> a -> c
-flip = undefined
+flip f y x = f x y 
 
 
 on :: (b -> b -> c) -> (a -> b) -> a -> a -> c

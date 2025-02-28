@@ -147,21 +147,44 @@ fib' n = memo !! n
     fib n = memo !! (n-1) + memo !! (n-2)
 
 fib'' :: Int -> Integer
-fib'' n = fib 0 1 n 
+fib'' n = memo !! n
+  where 
+    memo = [fib i | i <- [0..]]
+    fib 0 = 1
+    fib 1 = 1
+    fib n = memo !! (n-1) + memo !! (n-2)
+
+fib''' :: Int -> Integer
+fib''' n = fib 0 1 n 
   where fib x _ 0 = x 
         fib x y n = fib y (x+y) (n-1)
 
-
-
 -- sort by splitting the list in half and merging the sorted halves
 mergesort :: Ord a => [a] -> [a]
-mergesort = undefined
+mergesort [] = []
+mergesort [x] = [x]
+mergesort xs = merge (mergesort lhs) (mergesort rhs)
+  where (lhs, rhs) = splitAt (length xs `div` 2) xs
+        merge xs [] = xs
+        merge [] xs = xs 
+        merge (x:xs) (y:ys) | x < y = x : merge xs (y:ys)
+                            | otherwise = y : merge (x:xs) ys 
 \end{code}
 
 
 F. Generative recursion (Generates new subproblems (in size/structure))
 
 \begin{code}
-newtonSqrt :: Double -> Double -> Double
-newtonSqrt = undefined
+-- Newton's method for finding square roots 
+-- 1. Start with a guess g -- for sqrt x, try g=x/2 
+-- 2. Is g^2 = x?
+--    - if so, we're done
+-- 3. Improve the guess; g'=(g + x/g)/2 
+--    (if g is too low this will increase it, and vice versa)
+sqrt' :: Double -> Double
+sqrt' x = newton (x/2)
+  where newton g | goodEnough g = g 
+                 | otherwise    = newton (improve g)
+        goodEnough g = abs (g^2 - x) < 0.000000000001
+        improve g = (g + x/g) / 2
 \end{code}

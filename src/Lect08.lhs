@@ -11,7 +11,6 @@ import Data.Char
 
 Defining Types and Type Classes
 ===============================
-
 Agenda:
   - Type synonyms
   - Algebraic data types
