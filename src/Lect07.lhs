@@ -181,7 +181,8 @@ all p [] = True
 all p (x:xs) = p x && all p xs
 
 any :: (a -> Bool) -> [a] -> Bool
-any = undefined
+any p [] = True 
+any p (x:xs) = p x || any p xs 
 \end{code}
 
 E.g.,
@@ -199,14 +200,18 @@ E.g.,
 
 \begin{code}
 sort :: Ord a => [a] -> [a]
-sort [] = []
-sort (x:xs) = sort [y | y <- xs, y < x] 
-              ++ [x] 
-              ++ sort [y | y <- xs, y >= x]
+sort = sortBy compare
+--sort [] = []
+--sort (x:xs) = sort [y | y <- xs, y < x] 
+--              ++ [x] 
+--              ++ sort [y | y <- xs, y >= x]
 
 
 sortBy :: (a -> a -> Ordering) -> [a] -> [a]
-sortBy = undefined
+sortBy _ [] = []
+sortBy cmp (x:xs) = sortBy cmp [y | y <- xs, cmp y x == LT]
+                    ++ [x] 
+                    ++ sortBy cmp [y | y <- xs, cmp y x /= LT]
 \end{code}
 
 E.g.,
@@ -226,7 +231,7 @@ Consider the recursive patterns found in:
 \begin{code}
 and :: [Bool] -> Bool
 and [] = True
-and (x:xs) = (&&) x $ and xs
+and (x:xs) = x && and xs 
 
 
 showCat :: Show a => [a] -> String
@@ -242,7 +247,9 @@ What is the essential pattern here?
 Write the HOF that captures this pattern:
 
 \begin{code}
-foldr = undefined
+foldr :: (a -> b -> b) -> b -> [a] -> b 
+foldr _ v [] = v
+foldr f v (x:xs) = x `f` foldr f v xs
 \end{code}
 
 
@@ -250,34 +257,37 @@ E.g., trace the evaluation of `foldr (+) 0 [1..5]`:
 
   foldr (+) 0 (1 : (2 : (3 : (4 : (5 : [])))))
 
-= ?
+= 1 + foldr (+) 0 (2 : (3 : (4: (5: []))))
+
 
 
 Let's define some recursive functions in terms of foldr:
 
 \begin{code}
 and' :: [Bool] -> Bool
-and' = undefined
+and' = foldr (&&) True
 
 
 showCat' :: Show a => [a] -> String
-showCat' = undefined
+showCat' = foldr ((++) . show) ""
 
 
 (+++) :: [a] -> [a] -> [a]
-l1 +++ l2 = undefined
+l1 +++ l2 = foldr (:) l2 l1
 
 
 length' :: [a] -> Int
-length' = undefined
+length' = foldr f 0
+  where f _ l = 1 + l 
 
 
 map' :: (a -> b) -> [a] -> [b]
-map' f = undefined
-
+map' f = foldr((:) .f) []
 
 filter' :: (a -> Bool) -> [a] -> [a]
-filter' p = undefined
+filter' p = foldr f [] 
+  where f x r | p x = x : r
+              | otherwise = r
 \end{code}
 
 
